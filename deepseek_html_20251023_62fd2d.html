@@ -1,0 +1,678 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trò Chơi Bói Gạch Đếm Cơ Số 3</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js" integrity="sha512-GsLlZN/3F2ErC5ifS5QtgpiJtWd43JWSuIgh7mbzZ8zBps+dvLusV+eNQATqgA/HdeKFVgA5v3S/cIrLF7QnIg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;700&display=swap');
+
+        :root {
+            --primary: #FF6B6B;
+            --secondary: #4ECDC4;
+            --accent: #FFD166;
+            --light: #F7FFF7;
+            --dark: #1A535C;
+        }
+
+        body {
+            font-family: 'Baloo 2', cursive;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            color: var(--dark);
+            margin: 0;
+            padding: 0;
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+            box-sizing: border-box;
+        }
+
+        .game-container {
+            background-color: var(--light);
+            padding: 20px;
+            text-align: center;
+            width: 100%;
+            height: 100%;
+            border: 5px solid var(--accent);
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .game-container::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 6px;
+            background: linear-gradient(90deg, var(--primary), var(--secondary), var(--accent));
+        }
+
+        .main-content {
+            display: flex;
+            flex: 1;
+            gap: 20px;
+            height: calc(100% - 40px);
+        }
+
+        .left-panel {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .right-panel {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .current-challenge {
+            background-color: white;
+            border-radius: 20px;
+            padding: 25px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+            border: 4px solid var(--accent);
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+        }
+
+        .challenge-number {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            font-size: 3rem;
+            font-weight: bold;
+            color: var(--primary);
+            text-shadow: 2px 2px 0px rgba(0,0,0,0.1);
+        }
+
+        .challenge-text {
+            font-size: 2.2em;
+            color: var(--dark);
+            line-height: 1.4;
+            text-align: center;
+            margin: 20px 0;
+            max-width: 90%;
+        }
+
+        .challenge-english {
+            font-size: 1.4em;
+            color: #666;
+            font-style: italic;
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 2px dashed #ccc;
+            width: 90%;
+        }
+
+        .control-panel {
+            background-color: white;
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+            border: 2px solid var(--secondary);
+        }
+
+        .history-panel {
+            background-color: white;
+            border-radius: 20px;
+            padding: 25px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+            border: 4px solid var(--secondary);
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .history-title {
+            color: var(--dark);
+            font-size: 1.8em;
+            margin-bottom: 20px;
+            border-bottom: 3px solid var(--accent);
+            padding-bottom: 10px;
+            text-align: center;
+        }
+
+        .history-list {
+            flex: 1;
+            overflow-y: auto;
+            padding-right: 10px;
+        }
+
+        .history-item {
+            padding: 15px;
+            margin-bottom: 12px;
+            border-radius: 12px;
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            border-left: 5px solid var(--primary);
+            box-shadow: 0 3px 10px rgba(0,0,0,0.05);
+        }
+
+        .history-number {
+            font-weight: bold;
+            color: var(--primary);
+            font-size: 1.4em;
+            margin-bottom: 8px;
+            display: block;
+        }
+
+        .history-challenge {
+            font-size: 1.1em;
+            line-height: 1.4;
+            color: var(--dark);
+        }
+
+        .search-container {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .search-input {
+            font-family: 'Baloo 2', cursive;
+            font-size: 1.1em;
+            padding: 12px 20px;
+            border: 3px solid var(--secondary);
+            border-radius: 30px;
+            width: 100%;
+            text-align: center;
+            transition: all 0.3s ease;
+            background: white;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(255, 107, 107, 0.3);
+        }
+
+        .buttons {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        button {
+            font-family: 'Baloo 2', cursive;
+            font-size: 1.1em;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 30px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 700;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            flex: 1;
+        }
+
+        #generateBtn {
+            background: linear-gradient(135deg, var(--primary) 0%, #ff5252 100%);
+            color: white;
+        }
+
+        #generateBtn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(255, 107, 107, 0.4);
+        }
+        
+        #clearBtn {
+            background: linear-gradient(135deg, var(--secondary) 0%, #3dbeb6 100%);
+            color: white;
+        }
+        
+        #clearBtn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(78, 205, 196, 0.4);
+        }
+
+        #searchBtn {
+            background: linear-gradient(135deg, var(--dark) 0%, #0f3c43 100%);
+            color: white;
+            flex: 0 0 60px;
+        }
+
+        #searchBtn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(26, 83, 92, 0.4);
+        }
+
+        .language-toggle {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 15px;
+        }
+
+        .language-btn {
+            background-color: transparent;
+            border: 2px solid var(--dark);
+            color: var(--dark);
+            padding: 8px 15px;
+            font-size: 1em;
+            flex: 1;
+            transition: all 0.3s ease;
+        }
+
+        .language-btn.active {
+            background-color: var(--dark);
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        .slider-container {
+            padding: 15px;
+            background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+            border-radius: 15px;
+            border: 2px solid var(--accent);
+        }
+
+        .slider-label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 1em;
+            color: var(--dark);
+            font-weight: bold;
+        }
+
+        .slider {
+            width: 100%;
+            height: 12px;
+            -webkit-appearance: none;
+            appearance: none;
+            background: linear-gradient(90deg, var(--secondary), var(--primary));
+            outline: none;
+            border-radius: 6px;
+            margin-bottom: 10px;
+        }
+
+        .slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: var(--accent);
+            cursor: pointer;
+            border: 3px solid white;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+        }
+
+        .slider-value {
+            text-align: center;
+            font-weight: bold;
+            font-size: 1.3em;
+            color: var(--primary);
+            margin-top: 5px;
+        }
+
+        @keyframes popIn {
+            0% { transform: scale(0.9); opacity: 0; }
+            70% { transform: scale(1.02); }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        .new-result {
+            animation: popIn 0.6s ease-out;
+        }
+
+        @keyframes slideIn {
+            from { transform: translateY(-15px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        .new-history-item {
+            animation: slideIn 0.5s ease-out;
+        }
+
+        /* Custom scrollbar */
+        .history-list::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .history-list::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 4px;
+        }
+
+        .history-list::-webkit-scrollbar-thumb {
+            background: var(--secondary);
+            border-radius: 4px;
+        }
+
+        .history-list::-webkit-scrollbar-thumb:hover {
+            background: var(--dark);
+        }
+
+        footer {
+            margin-top: 15px;
+            font-size: 0.8em;
+            color: #666;
+            text-align: center;
+        }
+
+        .divider {
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--accent), transparent);
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="game-container">
+        <div class="main-content">
+            <div class="left-panel">
+                <div id="currentResult" class="current-challenge" style="display: none;">
+                    <div class="challenge-number" id="currentNumber">000</div>
+                    <div class="challenge-text" id="currentChallenge">Thử thách sẽ xuất hiện ở đây</div>
+                    <div class="challenge-english" id="currentChallengeEnglish"></div>
+                </div>
+
+                <div class="control-panel">
+                    <div class="search-container">
+                        <input type="text" class="search-input" id="searchInput" placeholder="000" maxlength="3" pattern="[0-2]{3}">
+                        <button id="searchBtn">
+                            <span>🔍</span>
+                        </button>
+                    </div>
+
+                    <div class="language-toggle">
+                        <button class="language-btn active" id="vietnameseBtn">Tiếng Việt</button>
+                        <button class="language-btn" id="englishBtn">English</button>
+                    </div>
+
+                    <div class="buttons">
+                        <button id="generateBtn">
+                            <span>🎲</span> Tạo Thử Thách
+                        </button>
+                        <button id="clearBtn">
+                            <span>🗑️</span> Xóa Lịch Sử
+                        </button>
+                    </div>
+
+                    <div class="slider-container">
+                        <label class="slider-label">Chọn số (0-26):</label>
+                        <input type="range" min="0" max="26" value="0" class="slider" id="numberSlider">
+                        <div class="slider-value" id="sliderValue">000</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="right-panel">
+                <div class="history-panel">
+                    <div class="history-title">Lịch Sử Thử Thách</div>
+                    <div class="history-list" id="historyList">
+                        <!-- Lịch sử sẽ được thêm vào đây -->
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <footer>
+            <p>Trò chơi phát triển tư duy toán học và vận động cho trẻ em</p>
+        </footer>
+    </div>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+
+            // Danh sách 27 thử thách vui nhộn cho trẻ em - SONG NGỮ
+            const challenges = [
+                { vi: "Hôn vào tay phải của mình 10 lần.", en: "Kiss your right hand 10 times." },
+                { vi: "Hát một bài hát bất kỳ mà bạn thích nhất.", en: "Sing your favorite song." },
+                { vi: "Hát bài hát tiếng Anh 'Baby Shark'.", en: "Sing the English song 'Baby Shark'." },
+                { vi: "Nói to câu 'TÔI RẤT KHỎE VÀ ĐẦY NĂNG LƯỢNG!'.", en: "Say loudly 'I AM VERY HEALTHY AND FULL OF ENERGY!'." },
+                { vi: "Hét thật to từ 'KHỎE!'.", en: "Shout the word 'HEALTHY!' loudly." },
+                { vi: "Hít đất 5 cái (hoặc chống tay vào tường 5 cái).", en: "Do 5 push-ups (or 5 wall push-ups)." },
+                { vi: "Đứng lên ngồi xuống 10 lần.", en: "Stand up and sit down 10 times." },
+                { vi: "Uống 7 ngụm nước nhỏ.", en: "Take 7 small sips of water." },
+                { vi: "Nhảy lò cò bằng chân trái 10 bước.", en: "Hop on your left foot 10 steps." },
+                { vi: "Kể tên 5 loại trái cây bạn biết.", en: "Name 5 fruits you know." },
+                { vi: "Làm mặt cười hài hước nhất có thể trong 10 giây.", en: "Make the funniest smile you can for 10 seconds." },
+                { vi: "Giả vờ làm một con sư tử và gầm thật to 3 lần.", en: "Pretend to be a lion and roar loudly 3 times." },
+                { vi: "Đi giật lùi 10 bước mà không nhìn lại.", en: "Walk backwards 10 steps without looking back." },
+                { vi: "Vỗ tay theo nhịp bài 'Một con vịt'.", en: "Clap to the rhythm of the song 'One Duck'." },
+                { vi: "Tưởng tượng bạn là siêu nhân và tạo dáng bay.", en: "Imagine you are a superhero and strike a flying pose." },
+                { vi: "Nhắm mắt và thử chạm vào mũi của mình bằng ngón trỏ.", en: "Close your eyes and try to touch your nose with your index finger." },
+                { vi: "Đứng bằng một chân trong 15 giây.", en: "Stand on one foot for 15 seconds." },
+                { vi: "Kể một câu chuyện cười mà bạn biết.", en: "Tell a joke you know." },
+                { vi: "Nói 'xin chào' bằng 3 giọng khác nhau (giọng em bé, giọng ông già...).", en: "Say 'hello' in 3 different voices (baby voice, old man voice...)." },
+                { vi: "Xoay một vòng tròn thật nhanh tại chỗ.", en: "Spin around quickly in place." },
+                { vi: "Giả tiếng kêu của 3 con vật khác nhau.", en: "Imitate the sounds of 3 different animals." },
+                { vi: "Tưởng tượng đang ăn một quả chanh thật chua và biểu cảm.", en: "Imagine eating a very sour lemon and make a face." },
+                { vi: "Nhảy lên cao 5 lần.", en: "Jump up high 5 times." },
+                { vi: "Dùng tay vỗ nhẹ vào đầu, vai, đầu gối, bàn chân.", en: "Gently tap your head, shoulders, knees, and toes with your hands." },
+                { vi: "Lấy một cuốn sách và đọc to một câu bất kỳ.", en: "Take a book and read one sentence aloud." },
+                { vi: "Nói tên của mình ngược lại (ví dụ: Nam -> man).", en: "Say your name backwards (e.g., Nam -> man)." },
+                { vi: "Chạy tại chỗ trong 20 giây.", en: "Run in place for 20 seconds." }
+            ];
+
+            // Lấy các phần tử HTML
+            const generateBtn = document.getElementById('generateBtn');
+            const clearBtn = document.getElementById('clearBtn');
+            const searchBtn = document.getElementById('searchBtn');
+            const searchInput = document.getElementById('searchInput');
+            const vietnameseBtn = document.getElementById('vietnameseBtn');
+            const englishBtn = document.getElementById('englishBtn');
+            const numberSlider = document.getElementById('numberSlider');
+            const sliderValue = document.getElementById('sliderValue');
+            const historyList = document.getElementById('historyList');
+            const currentResult = document.getElementById('currentResult');
+            const currentNumber = document.getElementById('currentNumber');
+            const currentChallenge = document.getElementById('currentChallenge');
+            const currentChallengeEnglish = document.getElementById('currentChallengeEnglish');
+
+            // Biến lưu trữ ngôn ngữ hiện tại
+            let currentLanguage = 'vi';
+
+            // Hàm chuyển đổi số thập phân sang cơ số 3 (3 chữ số)
+            function toBase3(num) {
+                let result = '';
+                for (let i = 0; i < 3; i++) {
+                    result = (num % 3) + result;
+                    num = Math.floor(num / 3);
+                }
+                return result;
+            }
+
+            // Hàm để hiển thị kết quả
+            function displayResult(number, challenge) {
+                currentResult.style.display = 'flex';
+                currentNumber.textContent = number;
+                
+                if (currentLanguage === 'vi') {
+                    currentChallenge.textContent = challenge.vi;
+                    currentChallengeEnglish.textContent = challenge.en;
+                    currentChallengeEnglish.style.display = 'block';
+                } else {
+                    currentChallenge.textContent = challenge.en;
+                    currentChallengeEnglish.style.display = 'none';
+                }
+                
+                currentResult.classList.remove('new-result');
+                void currentResult.offsetWidth;
+                currentResult.classList.add('new-result');
+
+                // Thêm vào lịch sử
+                const historyItem = document.createElement('div');
+                historyItem.className = 'history-item new-history-item';
+                
+                const numberSpan = document.createElement('span');
+                numberSpan.className = 'history-number';
+                numberSpan.textContent = number + "₃";
+                
+                const challengeSpan = document.createElement('div');
+                challengeSpan.className = 'history-challenge';
+                if (currentLanguage === 'vi') {
+                    challengeSpan.textContent = challenge.vi;
+                } else {
+                    challengeSpan.textContent = challenge.en;
+                }
+                
+                historyItem.appendChild(numberSpan);
+                historyItem.appendChild(challengeSpan);
+                historyList.insertBefore(historyItem, historyList.firstChild);
+                
+                setTimeout(() => {
+                    historyItem.classList.remove('new-history-item');
+                }, 1000);
+                
+                // Giới hạn lịch sử chỉ hiển thị 6 mục gần nhất
+                if (historyList.children.length > 6) {
+                    historyList.removeChild(historyList.lastChild);
+                }
+            }
+
+            // Hàm tạo số và thử thách
+            generateBtn.addEventListener('click', function() {
+                const randomDecimal = Math.floor(Math.random() * 27); // 0-26
+                const randomNumber = toBase3(randomDecimal);
+                const randomChallenge = challenges[randomDecimal];
+                
+                displayResult(randomNumber, randomChallenge);
+                
+                // Cập nhật slider
+                numberSlider.value = randomDecimal;
+                sliderValue.textContent = randomNumber;
+            });
+            
+            // Hàm tìm kiếm thử thách theo số
+            searchBtn.addEventListener('click', function() {
+                const searchValue = searchInput.value.trim();
+                
+                // Kiểm tra xem giá trị nhập vào có hợp lệ không (chỉ chứa 0, 1, 2 và có độ dài 3)
+                if (!/^[0-2]{3}$/.test(searchValue)) {
+                    alert('Vui lòng nhập một số có 3 chữ số (chỉ chứa 0, 1, 2)!');
+                    searchInput.focus();
+                    return;
+                }
+                
+                // Chuyển đổi số từ cơ số 3 sang cơ số 10
+                const decimalValue = parseInt(searchValue, 3);
+                
+                if (decimalValue >= challenges.length) {
+                    alert('Số này không có thử thách tương ứng! Vui lòng nhập số khác.');
+                    return;
+                }
+                
+                const challenge = challenges[decimalValue];
+                displayResult(searchValue, challenge);
+                
+                // Cập nhật slider
+                numberSlider.value = decimalValue;
+                sliderValue.textContent = searchValue;
+            });
+            
+            // Cho phép nhấn Enter để tìm kiếm
+            searchInput.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    searchBtn.click();
+                }
+            });
+
+            // Xử lý sự kiện slider
+            numberSlider.addEventListener('input', function() {
+                const decimalValue = parseInt(this.value);
+                const base3Number = toBase3(decimalValue);
+                sliderValue.textContent = base3Number;
+                
+                // Hiển thị thử thách tương ứng
+                const challenge = challenges[decimalValue];
+                currentResult.style.display = 'flex';
+                currentNumber.textContent = base3Number;
+                
+                if (currentLanguage === 'vi') {
+                    currentChallenge.textContent = challenge.vi;
+                    currentChallengeEnglish.textContent = challenge.en;
+                    currentChallengeEnglish.style.display = 'block';
+                } else {
+                    currentChallenge.textContent = challenge.en;
+                    currentChallengeEnglish.style.display = 'none';
+                }
+            });
+
+            // Chuyển đổi ngôn ngữ
+            vietnameseBtn.addEventListener('click', function() {
+                currentLanguage = 'vi';
+                vietnameseBtn.classList.add('active');
+                englishBtn.classList.remove('active');
+                
+                // Cập nhật hiển thị thử thách hiện tại
+                if (currentResult.style.display !== 'none') {
+                    const currentNumberValue = currentNumber.textContent;
+                    const decimalValue = parseInt(currentNumberValue, 3);
+                    const challenge = challenges[decimalValue];
+                    
+                    currentChallenge.textContent = challenge.vi;
+                    currentChallengeEnglish.textContent = challenge.en;
+                    currentChallengeEnglish.style.display = 'block';
+                }
+                
+                // Cập nhật tất cả các thử thách trong lịch sử
+                const historyItems = historyList.querySelectorAll('.history-item');
+                historyItems.forEach(item => {
+                    const numberSpan = item.querySelector('.history-number');
+                    const challengeSpan = item.querySelector('.history-challenge');
+                    const numberValue = numberSpan.textContent.replace('₃', '');
+                    const decimalValue = parseInt(numberValue, 3);
+                    const challenge = challenges[decimalValue];
+                    
+                    challengeSpan.textContent = challenge.vi;
+                });
+            });
+
+            englishBtn.addEventListener('click', function() {
+                currentLanguage = 'en';
+                englishBtn.classList.add('active');
+                vietnameseBtn.classList.remove('active');
+                
+                // Cập nhật hiển thị thử thách hiện tại
+                if (currentResult.style.display !== 'none') {
+                    const currentNumberValue = currentNumber.textContent;
+                    const decimalValue = parseInt(currentNumberValue, 3);
+                    const challenge = challenges[decimalValue];
+                    
+                    currentChallenge.textContent = challenge.en;
+                    currentChallengeEnglish.style.display = 'none';
+                }
+                
+                // Cập nhật tất cả các thử thách trong lịch sử
+                const historyItems = historyList.querySelectorAll('.history-item');
+                historyItems.forEach(item => {
+                    const numberSpan = item.querySelector('.history-number');
+                    const challengeSpan = item.querySelector('.history-challenge');
+                    const numberValue = numberSpan.textContent.replace('₃', '');
+                    const decimalValue = parseInt(numberValue, 3);
+                    const challenge = challenges[decimalValue];
+                    
+                    challengeSpan.textContent = challenge.en;
+                });
+            });
+            
+            // Hàm xóa lịch sử
+            clearBtn.addEventListener('click', function() {
+                historyList.innerHTML = '';
+                currentResult.style.display = 'none';
+            });
+
+            // Khởi tạo slider
+            sliderValue.textContent = toBase3(0);
+        });
+    </script>
+
+</body>
+</html>
