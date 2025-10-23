@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trò Chơi Bói Gạch Đếm Cơ Số 3</title>
+    <!-- MỚI: Thêm thư viện html2pdf.js vào trong <head> để tải sớm hơn -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js" integrity="sha512-GsLlZN/3F2ErC5ifS5QtgpiJtWd43JWSuIgh7mbzZ8zBps+dvLusV+eNQATqgA/HdeKFVgA5v3S/cIrLF7QnIg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;700&display=swap');
+
+        :root {
+            --primary: #FF6B6B;
+            --secondary: #4ECDC4;
+            --accent: #FFD166;
+            --light: #F7FFF7;
+            --dark: #1A535C;
+        }
+
+        body {
+            font-family: 'Baloo 2', cursive;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            color: var(--dark);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        .game-container {
+            background-color: var(--light);
+            padding: 30px;
+            border-radius: 25px;
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15);
+            text-align: center;
+            width: 100%;
+            max-width: 700px;
+            border: 8px solid var(--accent);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .game-container::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 10px;
+            background: linear-gradient(90deg, var(--primary), var(--secondary), var(--accent));
+        }
+
+        h1 {
+            color: var(--primary);
+            margin-bottom: 10px;
+            font-size: 2.5rem;
+            text-shadow: 2px 2px 0px rgba(0,0,0,0.1);
+        }
+
+        .subtitle {
+            color: var(--dark);
+            font-size: 1.2em;
+            margin-bottom: 25px;
+            line-height: 1.4;
+        }
+
+        .instructions {
+            background-color: rgba(255, 255, 255, 0.7);
+            border-radius: 15px;
+            padding: 15px;
+            margin-bottom: 25px;
+            border-left: 5px solid var(--secondary);
+        }
+
+        .instructions h3 {
+            margin-top: 0;
+            color: var(--dark);
+        }
+
+        .buttons {
+            margin-bottom: 30px;
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        button {
+            font-family: 'Baloo 2', cursive;
+            font-size: 1.2em;
+            padding: 15px 30px;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 700;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        #generateBtn {
+            background-color: var(--primary);
+            color: white;
+        }
+
+        #generateBtn:hover {
+            background-color: #ff5252;
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(255, 107, 107, 0.4);
+        }
+        
+        #clearBtn {
+            background-color: var(--secondary);
+            color: white;
+        }
+        
+        #clearBtn:hover {
+            background-color: #3dbeb6;
+            transform: translateY(-3px);
+        }
+
+        #exportPdfBtn {
+            background-color: var(--accent);
+            color: var(--dark);
+        }
+
+        #exportPdfBtn:hover {
+            background-color: #fcc43d;
+            transform: translateY(-3px);
+        }
+
+
+        .result-display {
+            background-color: white;
+            border-radius: 20px;
+            padding: 20px;
+            margin-top: 20px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+            border: 3px dashed var(--accent);
+        }
+
+        .number-display {
+            font-size: 3.5rem;
+            font-weight: bold;
+            color: var(--primary);
+            margin: 15px 0;
+            text-shadow: 2px 2px 0px rgba(0,0,0,0.1);
+        }
+
+        .challenge-display {
+            font-size: 1.4em;
+            color: var(--dark);
+            background-color: rgba(78, 205, 196, 0.2);
+            padding: 15px;
+            border-radius: 15px;
+            margin: 20px 0;
+            line-height: 1.5;
+        }
+
+        .history-title {
+            color: var(--dark);
+            margin-top: 30px;
+            font-size: 1.5em;
+            border-bottom: 3px solid var(--accent);
+            padding-bottom: 10px;
+            display: inline-block;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+        }
+
+        th, td {
+            padding: 15px;
+            border: 1px solid #ddd;
+            font-size: 1.1em;
+        }
+
+        th {
+            background-color: var(--secondary);
+            color: white;
+        }
+
+        tr:nth-child(even) {
+            background-color: rgba(247, 255, 247, 0.5);
+        }
+
+        @keyframes popIn {
+            0% { transform: scale(0.8); opacity: 0; }
+            70% { transform: scale(1.05); }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        .new-result {
+            animation: popIn 0.6s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .new-row {
+            animation: fadeIn 0.5s ease-in-out;
+            background-color: rgba(255, 209, 102, 0.3);
+        }
+
+        .tally-explanation {
+            margin-top: 30px;
+            background-color: rgba(255, 255, 255, 0.7);
+            border-radius: 15px;
+            padding: 15px;
+            border-left: 5px solid var(--primary);
+        }
+
+        .tally-example {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin: 15px 0;
+            flex-wrap: wrap;
+        }
+
+        .tally-group {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .tally-visual {
+            font-size: 2rem;
+            margin: 5px 0;
+        }
+
+        footer {
+            margin-top: 30px;
+            font-size: 0.9em;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="game-container">
+        <h1>Trò Chơi Bói Gạch Đếm Cơ Số 3</h1>
+        <p class="subtitle">Khám phá số học vui nhộn với hệ đếm cơ số 3 và những thử thách thú vị!</p>
+        
+        <div class="instructions">
+            <h3>✨ Cách chơi:</h3>
+            <p>Nhấn nút "Tạo Số & Thử Thách" để nhận một số ngẫu nhiên trong hệ cơ số 3 và một thử thách vui nhộn!</p>
+        </div>
+
+        <div class="buttons">
+            <button id="generateBtn">
+                <span>🎲</span> Tạo Số & Thử Thách
+            </button>
+            <button id="clearBtn">
+                <span>🗑️</span> Xóa Lịch Sử
+            </button>
+            <button id="exportPdfBtn">
+                <span>📄</span> Xuất Lịch Sử PDF
+            </button>
+        </div>
+
+        <div id="currentResult" class="result-display" style="display: none;">
+            <h2>Kết Quả Mới Nhất:</h2>
+            <div class="number-display" id="currentNumber">000</div>
+            <div class="challenge-display" id="currentChallenge">Thử thách sẽ xuất hiện ở đây</div>
+        </div>
+
+        <div id="historySection">
+            <h3 class="history-title">Lịch Sử Thử Thách</h3>
+            <table id="resultTable">
+                <thead>
+                    <tr>
+                        <th>Số (Cơ số 3)</th>
+                        <th>Thử Thách Vui Nhộn</th>
+                    </tr>
+                </thead>
+                <tbody id="resultTableBody">
+                </tbody>
+            </table>
+        </div>
+
+        <div class="tally-explanation">
+            <h3>📚 Hệ đếm cơ số 3 là gì?</h3>
+            <p>Trong hệ cơ số 3, chúng ta chỉ sử dụng 3 chữ số: 0, 1 và 2!</p>
+            <div class="tally-example">
+                <div class="tally-group"><div class="tally-visual">0₃</div><div> = 0</div></div>
+                <div class="tally-group"><div class="tally-visual">1₃</div><div> = 1</div></div>
+                <div class="tally-group"><div class="tally-visual">2₃</div><div> = 2</div></div>
+                <div class="tally-group"><div class="tally-visual">10₃</div><div> = 3</div></div>
+            </div>
+        </div>
+
+        <footer>
+            <p>Trò chơi được thiết kế để phát triển tư duy toán học và vận động cho trẻ em</p>
+        </footer>
+    </div>
+    
+    <script>
+        // SỬA LỖI: Bọc toàn bộ mã JavaScript trong sự kiện 'DOMContentLoaded'
+        // Lệnh này đảm bảo code chỉ chạy sau khi toàn bộ trang web đã tải xong,
+        // tránh lỗi không tìm thấy các nút.
+        document.addEventListener('DOMContentLoaded', function() {
+
+            // Danh sách 30 thử thách vui nhộn cho trẻ em
+            const challenges = [
+                "Hôn vào tay phải của mình 10 lần.", "Hát một bài hát bất kỳ mà bạn thích nhất.", "Hát bài hát tiếng Anh 'Baby Shark'.",
+                "Nói to câu 'TÔI RẤT KHỎE VÀ ĐẦY NĂNG LƯỢNG!'.", "Hét thật to từ 'KHỎE!'.", "Hít đất 5 cái (hoặc chống tay vào tường 5 cái).",
+                "Đứng lên ngồi xuống 10 lần.", "Uống 7 ngụm nước nhỏ.", "Nhảy lò cò bằng chân trái 10 bước.", "Kể tên 5 loại trái cây bạn biết.",
+                "Làm mặt cười hài hước nhất có thể trong 10 giây.", "Giả vờ làm một con sư tử và gầm thật to 3 lần.", "Đi giật lùi 10 bước mà không nhìn lại.",
+                "Vỗ tay theo nhịp bài 'Một con vịt'.", "Tưởng tượng bạn là siêu nhân và tạo dáng bay.", "Nhắm mắt và thử chạm vào mũi của mình bằng ngón trỏ.",
+                "Đứng bằng một chân trong 15 giây.", "Kể một câu chuyện cười mà bạn biết.", "Nói 'xin chào' bằng 3 giọng khác nhau (giọng em bé, giọng ông già...).",
+                "Xoay một vòng tròn thật nhanh tại chỗ.", "Giả tiếng kêu của 3 con vật khác nhau.", "Tưởng tượng đang ăn một quả chanh thật chua và biểu cảm.",
+                "Nhảy lên cao 5 lần.", "Dùng tay vỗ nhẹ vào đầu, vai, đầu gối, bàn chân.", "Lấy một cuốn sách và đọc to một câu bất kỳ.",
+                "Nói tên của mình ngược lại (ví dụ: Nam -> man).", "Chạy tại chỗ trong 20 giây.", "Khen một người bạn bên cạnh bạn.",
+                "Hít một hơi thật sâu và thở ra từ từ.", "Vẽ một hình mặt cười vào lòng bàn tay."
+            ];
+
+            // Lấy các phần tử HTML (bây giờ đã chắc chắn tồn tại)
+            const generateBtn = document.getElementById('generateBtn');
+            const clearBtn = document.getElementById('clearBtn');
+            const exportPdfBtn = document.getElementById('exportPdfBtn');
+            const tableBody = document.getElementById('resultTableBody');
+            const currentResult = document.getElementById('currentResult');
+            const currentNumber = document.getElementById('currentNumber');
+            const currentChallenge = document.getElementById('currentChallenge');
+
+            // Hàm tạo số và thử thách
+            generateBtn.addEventListener('click', function() {
+                const a = Math.floor(Math.random() * 3);
+                const b = Math.floor(Math.random() * 3);
+                const c = Math.floor(Math.random() * 3);
+                const randomNumber = `${a}${b}${c}`;
+
+                const randomIndex = Math.floor(Math.random() * challenges.length);
+                const randomChallenge = challenges[randomIndex];
+
+                currentResult.style.display = 'block';
+                currentNumber.textContent = randomNumber;
+                currentChallenge.textContent = randomChallenge;
+                
+                currentResult.classList.remove('new-result');
+                void currentResult.offsetWidth;
+                currentResult.classList.add('new-result');
+
+                const newRow = tableBody.insertRow(0); // Thêm dòng mới vào đầu bảng
+                newRow.classList.add('new-row');
+
+                const numberCell = newRow.insertCell(0);
+                numberCell.textContent = randomNumber + "₃";
+                
+                const challengeCell = newRow.insertCell(1);
+                challengeCell.textContent = randomChallenge;
+                
+                setTimeout(() => {
+                    newRow.classList.remove('new-row');
+                }, 1000);
+            });
+            
+            // Hàm xóa lịch sử
+            clearBtn.addEventListener('click', function() {
+                tableBody.innerHTML = '';
+                currentResult.style.display = 'none';
+            });
+
+            // Hàm xuất PDF
+            exportPdfBtn.addEventListener('click', function() {
+                const element = document.getElementById('historySection');
+                
+                if (tableBody.rows.length === 0) {
+                    alert('Không có lịch sử để xuất file PDF!');
+                    return;
+                }
+
+                const opt = {
+                  margin:       10,
+                  filename:     'lich-su-thu-thach.pdf',
+                  image:        { type: 'jpeg', quality: 0.98 },
+                  html2canvas:  { scale: 2, useCORS: true },
+                  jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
+                };
+
+                // Kiểm tra xem thư viện html2pdf đã được tải chưa
+                if (typeof html2pdf === 'undefined') {
+                    alert('Lỗi: Không thể tải thư viện xuất PDF. Vui lòng kiểm tra kết nối mạng và thử lại.');
+                    return;
+                }
+
+                html2pdf().from(element).set(opt).save();
+            });
+        });
+    </script>
+
+</body>
+</html>
